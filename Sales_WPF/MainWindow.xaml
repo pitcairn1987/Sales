@@ -1,0 +1,480 @@
+﻿<Window  x:Class="Sales_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sales_WPF"
+         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+         mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1200">
+
+
+
+
+    <Grid>
+        <TabControl>
+            <TabItem Header="PRODUKTY"  FontSize="17" Background="SteelBlue">
+                <TabItem.DataContext>
+                    <local:ProductsViewModel />
+                </TabItem.DataContext>
+
+
+                <Grid Background="LightGray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125*"/>
+                        <ColumnDefinition Width="1061*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*" />
+
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" x:Name="stkProduct" HorizontalAlignment="Stretch"  Background ="LightSteelBlue"  Grid.Row="0" Grid.ColumnSpan="2" >
+                        <ComboBox x:Name="cmbProducer" Height="30" Width="Auto" MinWidth="200" FontSize="17"  VerticalAlignment="Top" SelectedItem="{Binding SelectedProducer,Mode=TwoWay}" 
+                                  Margin="10,15,10,0"
+                                  ItemsSource="{Binding ListProducers}"  DisplayMemberPath="ProducerName" />
+
+                        <TextBox x:Name="txtProductName" Text="{Binding NewProduct.ProductName , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      Width="Auto" FontSize="17" Height="30" VerticalAlignment="Center" Margin="0,0,10,0" MinWidth="200"  ToolTip="Nazwa" />
+
+                        <TextBox x:Name="txtProductCode" Text="{Binding NewProduct.ProductCode , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      Width="Auto" FontSize="17" Height="30" VerticalAlignment="Center" Margin="0,0,10,0" MinWidth="120" ToolTip="Kod"  />
+
+                        <TextBox Name="txtProductPrice" BorderBrush="DarkBlue" Text="{Binding NewProduct.Price , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"    InputScope="Digits"  
+                     FontSize="17" FontWeight="ExtraLight" Height="30" Width="50" Margin="0,0,10,0" ToolTip="Cena"  />
+                        <TextBox Name="txtProductCost"  BorderBrush="Crimson" InputScope="Digits" Text="{Binding NewProduct.Prod , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  StringFormat=N1}"  FontSize="17" 
+                     Margin="0,0,10,0" FontWeight="ExtraLight" Height="30" Width="50" ToolTip="Koszt"  />
+                        <TextBox Name="txtProductTax"  BorderBrush="Crimson" InputScope="Digits" Text="{Binding NewProduct.Tax , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="17" 
+                     Margin="0,0,10,0" FontWeight="ExtraLight" Height="30" Width="50" ToolTip="Podatek" />
+
+                        <Button x:Name="btnAddProduct" Height="30" Content="Dodaj" Width="100" Command="{Binding AddProductCommand}" />
+
+
+                     
+
+
+                    </StackPanel>
+
+
+                    <DataGrid x:Name="dtgProducts"   SelectedItem="{Binding SelectedProduct}" SelectionMode="Single" FontWeight="Light"  Grid.Row="1" Margin="10,5,10,10" 
+                              Width="Auto" FontSize="20" AutoGenerateColumns="False" CanUserAddRows="False"
+                              CellEditEnding="dtgProducts_CellEditEnding"  ItemsSource="{Binding ListProducts,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              HorizontalGridLinesBrush="Gray"
+                                VerticalGridLinesBrush="Gray" Grid.ColumnSpan="2"
+                              >
+                        <DataGrid.InputBindings>
+                            <KeyBinding        Key="Delete"  Command="{Binding DelProductCommand}"  />
+                        </DataGrid.InputBindings>
+                        <DataGrid.Columns>
+
+
+                            <DataGridTextColumn Header="Producent" IsReadOnly="True"   Binding="{Binding Producer.ProducerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SteelBlue"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Nazwa" Visibility="Visible" Width="SizeToCells" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SteelBlue"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding ProductCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Kod" Visibility="Visible" Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SpringGreen"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Price , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Cena" Visibility="Visible" Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="IndianRed"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Prod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Koszt" Visibility="Visible" Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SpringGreen"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Tax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Podatek" Visibility="Visible" Width="90" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SpringGreen"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="PRODUCENCI"  FontSize="17" Background="SteelBlue">
+                <TabItem.DataContext>
+                    <local:ProducersViewModel />
+                </TabItem.DataContext>
+
+
+                <Grid Background="LightGray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125*"/>
+                        <ColumnDefinition Width="1061*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*" />
+
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" x:Name="stkProducer" HorizontalAlignment="Stretch"  Background ="LightSteelBlue"  Grid.Row="0" Grid.ColumnSpan="2" >
+
+
+                        <TextBox x:Name="txtProducerName" Text="{Binding NewProducer.ProducerName , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      Width="Auto" FontSize="17" Height="30" VerticalAlignment="Center" Margin="10,0,10,0" MinWidth="200"   />
+
+
+                        <Button x:Name="btnAddProducer" Height="30" Content="Dodaj" Width="100" Command="{Binding AddProducerCommand}" />
+
+                        
+                    </StackPanel>
+
+
+                    <WrapPanel x:Name="dtgProducers"  Grid.Row="1" Margin="10,5,10,10" Grid.ColumnSpan="2">
+
+                        <ItemsControl ItemsSource="{Binding ListProducers,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox Padding="5,5,5,5" LostFocus="TextBox_LostFocus"  FontSize="25" Text="{Binding ProducerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="60" Background="SteelBlue" Foreground="White"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                         
+                          
+
+                        </ItemsControl>
+
+
+                    </WrapPanel>
+
+<!--
+                    <DataGrid x:Name="dtgProducers"   SelectedItem="{Binding selectedProducer}" SelectionMode="Single" FontWeight="Light"  Grid.Row="1" Margin="10,5,10,10" 
+                              Width="Auto" FontSize="20" AutoGenerateColumns="False" CanUserAddRows="False"
+                              CellEditEnding="dtgProducers_CellEditEnding"  ItemsSource="{Binding ListProducers,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              HorizontalGridLinesBrush="Gray"
+                                VerticalGridLinesBrush="Gray" Grid.ColumnSpan="2"
+                              >
+                        <DataGrid.InputBindings>
+                            <KeyBinding        Key="Delete"  Command="{Binding DelProducerCommand}"  />
+                        </DataGrid.InputBindings>
+                        <DataGrid.Columns>
+
+
+
+                            <DataGridTextColumn Binding="{Binding ProducerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Nazwa" Visibility="Visible" Width="SizeToCells" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SteelBlue"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    -->
+                </Grid>
+            </TabItem>
+            <TabItem Header="SKLEP" FontSize="17" Background="IndianRed">
+                <TabItem.DataContext>
+                    <local:ShopViewModel />
+                </TabItem.DataContext>
+                <Grid Background="LightSteelBlue">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+
+
+                    <StackPanel Orientation="Horizontal" x:Name="stkEvents" HorizontalAlignment="Center"  Background ="LightSteelBlue"  Grid.Row="0" Grid.Column="0" >
+
+
+                        <DatePicker x:Name="datePicker" Height="30" Margin="0,0,20,0" SelectedDate="{Binding EventDay, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"  />
+
+                        <Button x:Name="btnAddEvent" Height="30"  Content="Dodaj" Width="100"  Command="{Binding AddEventCommand}"  />
+
+
+                    </StackPanel>
+
+
+                    <StackPanel Orientation="Horizontal" x:Name="stkSale" HorizontalAlignment="Center"  Background ="LightSteelBlue"  Grid.Row="0" Grid.Column="1" >
+                        <ComboBox x:Name="cmbProducts" Height="30" Width="Auto" MinWidth="200" FontSize="17"  VerticalAlignment="Center" SelectedItem="{Binding SelectedProduct, Mode=TwoWay}" 
+                                  Margin="10,0,10,0"
+                                  ItemsSource="{Binding ListProducts}"  DisplayMemberPath="FullName"
+                                  SelectionChanged="cmbProducts_SelectionChanged"
+                                  >
+                        </ComboBox>
+
+
+                        <TextBox Name="txtSalePrice" BorderBrush="DarkBlue"   InputScope="Digits" Text="{Binding SalePrice, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="17" FontWeight="ExtraLight" Height="30" Width="50" Margin="0,0,10,0"  />
+
+                        <TextBox Name="txtSaleQty"  BorderBrush="Crimson" InputScope="Digits" Text="{Binding SaleQty, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,0,10,0" FontWeight="ExtraLight" Height="30" Width="50"  />
+
+                        <CheckBox Name="chkRegister"  BorderBrush="Crimson"  IsChecked="{Binding SaleRegister , UpdateSourceTrigger=PropertyChanged}"  VerticalContentAlignment="Center"
+                     Margin="0,0,10,0" FontWeight="ExtraLight" Height="30" Width="30"  />
+
+                        <Button x:Name="btnAddSale" Height="30"  Content="Dodaj" Width="100" Command="{Binding AddSaleCommand}" />
+                      
+
+                    </StackPanel>
+
+
+                    <ListView x:Name="lstShopDays" SelectedItem="{Binding SelectedEvent,Mode=TwoWay}" Margin="5,5,0,10" Width="Auto" SelectionChanged="lstShopDays_SelectionChanged"
+                              Background="LightSeaGreen" FontWeight="Light" FontSize="20" DisplayMemberPath="EventName" 
+                              Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding ListShopDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                        <ListView.InputBindings>
+                            <KeyBinding        Key="Delete"  Command="{Binding DeleteEventCommand}"  />
+                        </ListView.InputBindings>
+                    </ListView>
+
+
+
+                    <DataGrid x:Name="dtgShopSales"    SelectionMode="Single" FontWeight="Light" SelectedItem="{Binding SelectedSale}" Grid.Row="1" Grid.Column="1"  Margin="10,5,10,10" 
+                              Width="Auto" FontSize="20" AutoGenerateColumns="False" CanUserAddRows="False"  ItemsSource="{Binding ElementName=lstShopDays, Path=SelectedItem.ListSales}" 
+                              
+                              HorizontalGridLinesBrush="Gray"
+                                VerticalGridLinesBrush="Gray" 
+                              >
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="CellEditEnding">
+                                <i:InvokeCommandAction Command="{Binding EditCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <DataGrid.InputBindings>
+                            <KeyBinding        Key="Delete"  Command="{Binding DeleteSaleCommand}"  />
+                        </DataGrid.InputBindings>
+
+
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Produkt" IsReadOnly="True"    Binding="{Binding Product}" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SteelBlue"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding= "{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Cena" Visibility="Visible"  Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="SteelBlue"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Ilość" Visibility="Visible" Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="IndianRed"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridCheckBoxColumn IsReadOnly="True" Binding="{Binding IsRegister, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Kasa" Visibility="Visible" Width="70">
+
+                                <!--
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:InvokeCommandAction Command="{Binding EditCommand}"/>
+                                    </i:EventTrigger>
+
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:InvokeCommandAction Command="{Binding EditCommand}"/>
+                                    </i:EventTrigger>
+
+                                </i:Interaction.Triggers>
+-->
+                              
+                              
+
+
+
+                                <DataGridCheckBoxColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="IndianRed"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.HeaderStyle>
+                            </DataGridCheckBoxColumn>
+<!--
+                            <DataGridTextColumn Binding="{Binding IsRegister, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Header="Kasa" Visibility="Visible" Width="70" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="IndianRed"/>
+                                        <Setter Property="Padding" Value="10,0,10,0"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            -->
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock x:Name="txbSalesSum"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,20,0"  Text="{Binding SaleSum, Mode=TwoWay,   UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+            </TabItem>
+
+
+            <TabItem Header="RAPORTY" FontSize="17" Background="WhiteSmoke">
+                <TabItem.DataContext>
+                    <local:CustomReportsViewModel />
+                </TabItem.DataContext>
+
+
+                <Grid  Background="LightGray">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="Auto"/>
+                        <RowDefinition  Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="Auto"/>
+                        <ColumnDefinition Width="339*"/>
+                        <ColumnDefinition Width="766*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel x:Name="stkParams" Grid.Row="0" Grid.Column="1" Margin="20,10,20,20">
+                    </StackPanel>
+                    <Button x:Name="btnGenerateReport" Click="btnGenerateReport_Click" Visibility="Collapsed" Content="Generuj" Grid.Row="1" Grid.Column="1" Width="100" Margin="20,0,0,0"/>
+
+
+                    <ListView x:Name="lstCustomReports" Visibility="Visible" Padding="10,0,10,0" Grid.Column="0" Grid.Row="0"   Margin="20,10,20,20" Grid.RowSpan="3"   Background="AntiqueWhite" Foreground="Black"  SelectionChanged="lstReports_SelectionChanged" BorderThickness="0"  FontSize="20" FontWeight="UltraLight"    ItemsSource="{Binding ListReports}" DisplayMemberPath="Name">
+
+                        <ListView.Resources>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                            <Border x:Name="Bd"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"               
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="true">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="Selector.IsSelectionActive"
+                                            Value="True" />
+                                                        <Condition Property="IsSelected"
+                                            Value="True" />
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="Background" 
+                                    TargetName="Bd"
+                                    Value="OrangeRed" />
+
+                                                </MultiTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.Resources>
+
+                    </ListView>
+
+                    <DataGrid x:Name="dtgCustomReport"  Visibility="Collapsed" Margin="10,10,40,40"  EnableRowVirtualization="False"  Grid.Column="1" Grid.Row="2"    FontSize="17"  IsReadOnly="True"  AutoGenerateColumns="True" ItemsSource="{Binding}" Grid.ColumnSpan="2" LoadingRow="dtgCustomReport_LoadingRow" MouseDoubleClick="dtgCustomReport_MouseDoubleClick" AutoGeneratingColumn="dtgCustomReport_AutoGeneratingColumn" >
+                      
+
+                    </DataGrid>
+
+
+
+                </Grid>
+            </TabItem>
+
+
+        </TabControl>
+
+
+    </Grid>
+</Window>

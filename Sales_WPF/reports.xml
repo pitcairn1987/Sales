@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<config>
+<reports>
+ <report>
+      <id>1</id>
+      <title>Producenci -sumarycznie</title>
+	  <type></type>
+
+	  
+	  <columns>
+          <column name="ProducerName" caption = "Producent" background="Red"  foreground ="Black" align="Center"    />
+          <column name="ProducerID" caption = "ID producenta" format="decimal" background="Red"  foreground ="White" align="Left" passtoreport="2" />
+		  
+		   <column name="Cnt" caption = "Ilość" format="decimal" background="Red"  foreground ="White" align="Right" />
+          <column name="Suma" caption = "Suma"   format="decimal" background="Red" foreground ="White" align="Right" />  
+         
+		  <column name="Koszt" caption = "Koszt" format="decimal" background="Red"  foreground ="White" align="Right" />
+          <column name="Zysk" caption = "Zysk"   format="decimal" background="Red" foreground ="White" align="Right" />  
+		  
+	  </columns>
+      
+      <params>
+
+    <param name="year" caption="Rok" value="2018"/>
+     <param name="month" caption="Miesiąc" value="10" />
+  
+      </params>
+	  
+      <query>
+	  
+		 select
+				PR.ProducerName
+				,PR.ProducerID
+				,sum(sd.Qty) as Cnt
+				,sum (sd.Price * sd.Qty) as Suma 
+				,sum (sd.Prod * sd.Qty) as Koszt 
+				,round(sum(sd.Price *sd.Qty) - sum(sd.Prod*sd.Qty)) as Zysk
+                ,CASE WHEN sum(sd.Prod * sd.Qty) > 1000 THEN 'SteelBlue' ELSE '' end as RowColor
+		from SaleDetails sd  
+		inner join Events e  on sd.EventID = e.EventID
+		inner join Products P  on sd.ProductID = P.ProductID
+		inner join Producers PR  on P.ProducerID = PR.ProducerID 
+		where E.eventtypeid = 4 and e.eventdate  like '{year}-{month}-%' 
+		group by p.producerid
+		order by zysk desc  
+		
+	  </query>
+   </report>
+
+   
+   
+   
+   <report>
+      <id>2</id>
+      <title>Producenci</title>
+	  <type>hidden</type>
+	  
+	    <param name="year" caption="Rok" value="2018"/>
+     <param name="month" caption="Miesiąc" value="10" />
+	  
+	  <columns>
+	  <column name="ProductName" caption = "Produkt" background="Red"  foreground ="Black" align="Center"   />
+	   <column name="ProducerID" caption = "Id producenta" format="decimal" background="Blue"  foreground ="White" align="Left"  passtoreport="3" />
+	   <column name="Cnt" caption = "Ilość" format="decimal" background="Red"  foreground ="White" align="Right" />
+       <column name="Suma" caption = "Suma"   format="decimal" background="Red" foreground ="White" align="Right" /> 
+	  <column name="Koszt" caption = "Koszt" format="decimal" background="Green"  foreground ="White" align="Left" />
+	  <column name="Zysk" caption = "Zysk" format="decimal" background="Green"  foreground ="White" align="Left" />
+	  </columns>
+
+	 
+	  
+      <query>
+	  
+	  	 select
+				'SUMA' as ProductName
+				,pr.producerid as ProducerID
+				,sum(sd.Qty) as Cnt
+				,sum (sd.Price * sd.Qty) as Suma 
+				,sum (sd.Prod * sd.Qty) as Koszt 
+				,round(sum(sd.Price *sd.Qty) - sum(sd.Prod*sd.Qty)) as Zysk
+                 ,'SteelBlue' as RowColor
+				 ,1 as ord
+		from SaleDetails sd  
+		inner join Events e  on sd.EventID = e.EventID
+		inner join Products P  on sd.ProductID = P.ProductID
+		inner join Producers PR  on P.ProducerID = PR.ProducerID 
+		where E.eventtypeid = 4 and e.eventdate  like '{year}-{month}-%' and pr.producerid='{parameter}'
+		group by p.producerid
+		
+		union
+	  
+	  
+		select
+				P.ProductName
+				,pr.producerid as ProducerID
+				,sum(sd.Qty) as Cnt
+				,sum (sd.Price * sd.Qty) as Suma 
+				,sum (sd.Prod * sd.Qty) as Koszt 
+				,round(sum(sd.Price *sd.Qty) - sum(sd.Prod*sd.Qty)) as Zysk
+                ,'null' as RowColor
+				,0 as ord
+		from SaleDetails sd  
+		inner join Events e  on sd.EventID = e.EventID
+		inner join Products P  on sd.ProductID = P.ProductID
+		inner join Producers PR  on P.ProducerID = PR.ProducerID
+		where E.eventtypeid = 4 and e.eventdate like '{year}-{month}-%' and pr.producerid='{parameter}'
+		group by p.productid
+		order by ord
+
+	  </query>
+   </report>
+   
+     <report>
+      <id>3</id>
+      <title>Miesięcznie</title>
+	  <type></type>  
+	  <columns>
+          <column name="Month" caption = "Miesiąc" background="Red"  foreground ="Black" align="Center"    />
+          <column name="Suma" caption = "Suma" format="decimal" background="Red"  foreground ="White" align="Left" />
+		  <column name="Zysk" caption = "Zysk" format="decimal" background="Red"  foreground ="White" align="Right" />
+	  </columns>
+	  
+	  <params>
+		<param name="year" caption="Rok" value="2018"/>
+      </params>
+      
+    
+      <query>
+	  
+		select 
+		sum(sd.Price * sd.Qty) as Suma,
+		round(sum(sd.Qty *(sd.Price - sd.Prod))) as Zysk,
+		strftime('%m',e.EventDate) as MM,
+		case 
+		when strftime('%m',e.EventDate) = '01' then 'Styczeń' 
+		when strftime('%m',e.EventDate) = '02' then 'Luty'
+		when strftime('%m',e.EventDate) = '03' then 'Marzec'
+		when strftime('%m',e.EventDate) = '04' then 'Kwiecień'
+		when strftime('%m',e.EventDate) = '05' then 'Maj'
+		when strftime('%m',e.EventDate) = '06' then 'Czerwiec'
+		when strftime('%m',e.EventDate) = '07' then 'Lipiec'
+		when strftime('%m',e.EventDate) = '08' then 'Sierpień'
+		when strftime('%m',e.EventDate) = '09' then 'Wrzesień'
+		when strftime('%m',e.EventDate) = '10' then 'Październik'
+		when strftime('%m',e.EventDate) = '11' then 'Listopad'
+		when strftime('%m',e.EventDate) = '12' then 'Grudzień'
+		end as Month
+
+		from SaleDetails sd 
+		inner join Events e on sd.EventID = e.EventID
+		where e.eventtypeid = 4 
+				and e.eventdate like '{year}-%'
+		group by mm
+		order by mm
+		
+	  </query>
+   </report>
+   
+   
+     <report>
+      <id>4</id>
+      <title>Produkty import/eksport</title>
+	  <type></type>  
+	  <columns>
+          
+	  </columns>
+	  
+      <query>  
+		select * from products		
+	  </query>
+   </report>
+   
+   
+     <report>
+      <id>5</id>
+      <title>Kasa</title>
+	  <type></type>  
+	  <columns>
+          <column name="EventDate" caption = "Miesiąc" background="SteelBlue"  foreground ="Black" align="Center"    />
+          <column name="S3" caption = "3%" format="decimal" background="Green"  foreground ="White" align="Center" />
+		  <column name="S55" caption = "5.5%" format="decimal" background="Green"  foreground ="White" align="Center" />
+          <column name="SumTotal" caption = "Suma" format="decimal" background="Red"  foreground ="White" align="Center" />
+	  </columns>
+	  
+
+      <query>
+	  
+
+         select
+            sd.eventid
+            ,e.EventDate
+            ,sum(case when sd.isregister = 1 and p.tax = 3 then sd.Qty*sd.Price else 0 end) as S3
+            ,sum(case when sd.isregister = 1 and p.tax != 3 then sd.Qty*sd.Price else 0 end) as S55
+            ,sum(case when sd.isregister = 1 then sd.Qty*sd.Price else 0 end) as SumTotal
+            ,0 AS SORT
+            ,'' as RowColor
+             from saledetails sd
+         inner join products p on p.productid = sd.productid
+         inner join Events e on sd.eventid= e.eventid
+         group by e.eventid,e.EventDate
+
+
+        UNION ALL
+
+         select
+            0 as eventid
+            ,strftime('%Y-%m', EventDate) AS EventDate
+            ,sum(case when sd.isregister = 1 and p.tax = 3 then sd.Qty*sd.Price else 0 end) as S3
+            ,sum(case when sd.isregister = 1 and p.tax != 3 then sd.Qty*sd.Price else 0 end) as S55
+            ,sum(case when sd.isregister = 1 then sd.Qty*sd.Price else 0 end) as SumTotal
+             ,1 AS SORT
+             ,'SteelBlue'as RowColor
+         from saledetails sd
+         inner join products p on p.productid = sd.productid
+         inner join Events e on sd.eventid= e.eventid
+         group by strftime('%Y-%m', EventDate)
+         ORDER BY EventDate desc, sort
+         
+         
+         
+		
+	  </query>
+   </report>
+   
+   
+
+
+</reports>
+
+</config>
